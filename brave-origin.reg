@@ -1,0 +1,78 @@
+Windows Registry Editor Version 5.00
+
+; Brave Origin - Complete Debloat Policy for Windows
+; Import this file, then fully restart Brave
+; Verify at brave://policy
+;
+; NOTE: ManagedSearchEngines (search engine restriction) is NOT
+; included here because complex policies require special registry
+; formatting. See brave-origin-policies.json for full config.
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\BraveSoftware\Brave]
+
+; === BRAVE BLOAT FEATURES ===
+"BraveRewardsDisabled"=dword:00000001
+"BraveWalletDisabled"=dword:00000001
+"BraveVPNDisabled"=dword:00000001
+"BraveAIChatEnabled"=dword:00000000
+"BraveNewsDisabled"=dword:00000001
+"BraveTalkDisabled"=dword:00000001
+"TorDisabled"=dword:00000001
+"BraveSpeedreaderEnabled"=dword:00000000
+"BraveWaybackMachineEnabled"=dword:00000000
+"BravePlaylistEnabled"=dword:00000000
+
+; === TELEMETRY & BACKGROUND ===
+"BraveP3AEnabled"=dword:00000000
+"BraveStatsPingEnabled"=dword:00000000
+"BraveWebDiscoveryEnabled"=dword:00000000
+"SyncDisabled"=dword:00000001
+"BackgroundModeEnabled"=dword:00000000
+"MetricsReportingEnabled"=dword:00000000
+"ComponentUpdatesEnabled"=dword:00000000
+
+; === RAM SAVING ===
+"HighEfficiencyModeEnabled"=dword:00000001
+
+; === PRIVACY HARDENING ===
+"DnsOverHttpsMode"="secure"
+"DnsOverHttpsTemplates"="https://dns.adguard-dns.com/dns-query"
+"SafeBrowsingProtectionLevel"=dword:00000002
+"AlternateErrorPagesEnabled"=dword:00000000
+"NetworkPredictionOptions"=dword:00000002
+"SearchSuggestEnabled"=dword:00000000
+"PaymentMethodQueryEnabled"=dword:00000000
+"UserFeedbackAllowed"=dword:00000000
+"SpellcheckEnabled"=dword:00000000
+"HttpsUpgradesEnabled"=dword:00000001
+
+; === AUTOFILL, PASSWORDS & TRANSLATE ===
+"PasswordManagerEnabled"=dword:00000000
+"AutofillAddressEnabled"=dword:00000000
+"AutofillCreditCardEnabled"=dword:00000000
+"TranslateEnabled"=dword:00000000
+
+; === DISABLE BLOAT ===
+"DeveloperToolsAvailability"=dword:00000002
+"IncognitoModeAvailability"=dword:00000000
+"BrowserAddPersonEnabled"=dword:00000000
+"BrowserGuestModeEnabled"=dword:00000000
+"DefaultBrowserSettingEnabled"=dword:00000000
+
+; === UI TWEAKS ===
+"BookmarkBarEnabled"=dword:00000000
+"ShowHomeButton"=dword:00000000
+"HomepageLocation"="about:blank"
+"NewTabPageLocation"="about:blank"
+
+; === DOWNLOADS ===
+"DownloadRestrictions"=dword:00000000
+"PromptForDownloadLocation"=dword:00000001
+"PrintingEnabled"=dword:00000001
+
+; --- MANUAL STEPS NEEDED ON WINDOWS ---
+; 1. brave://flags/#brave-sidebar -> set to Disabled (removes sidebar)
+; 2. brave://settings/appearance -> "Use system title bar and borders" -> ON (for Chrome-style border)
+; 3. brave://flags/#enable-parallel-downloading -> Enabled (faster downloads, less RAM)
+; 4. brave://flags/#ignore-gpu-blocklist -> Enabled (better GPU perf)
+; 5. Add --disable-features=AIChat,BraveVPN to Brave shortcut target
