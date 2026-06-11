@@ -40,8 +40,6 @@ Brave is great, but it ships with **Rewards, Wallet, VPN, Leo AI, News, Talk, To
 
 ## 🚀 One-Click Setup
 
-Place **BO.png** (your custom icon) in the same folder as the script for automatic icon replacement.
-
 ### 🐧 Linux
 
 ```bash
@@ -155,18 +153,33 @@ brave://settings/system                  → "Memory Saver" ON
 
 ---
 
-## 🎨 Custom Icon
+## 🎨 Replacing the Brave Logo
 
-Drop **BO.png** in the same folder as the script. The setup will:
+The setup scripts do **not** touch the Brave icon. If you want to use a custom logo, do it manually per platform:
 
-| Platform | What happens |
-|----------|-------------|
-| **Linux** | Replaces `/usr/share/icons/hicolor/*/apps/brave-browser.png` — applies system-wide |
-| **macOS** | Places the icon in the Brave Origin launcher app (open that instead of normal Brave) |
-| **Windows (normal)** | Creates desktop shortcut with BO.ico — place a `BO.ico` file alongside the script |
-| **Windows (Store)** | Creates desktop shortcut with BO.ico — same requirement |
+### Linux
+```bash
+# Replace the system Brave icon (256x256 is the app menu size)
+sudo cp /path/to/your-logo.svg /usr/share/icons/hicolor/scalable/apps/brave-browser.svg
+# Or for PNG:
+# sudo cp /path/to/your-logo.png /usr/share/icons/hicolor/256x256/apps/brave-browser.png
+sudo gtk-update-icon-cache /usr/share/icons/hicolor/
+```
 
-**Note:** Windows shortcut icons require `.ico` format. [Convert BO.png to BO.ico](https://convertio.co/png-ico/) and place it in the folder.
+### macOS
+Replace the app icon in the `.app` bundle:
+```bash
+# Convert your .png to .icns first
+sudo cp /path/to/your-logo.icns /Applications/Brave\ Browser.app/Contents/Resources/app.icns
+# Clear icon cache
+sudo rm -rf /Library/Caches/com.apple.iconservices.store
+```
+
+### Windows
+Create a desktop shortcut and point its icon to your `.ico` file:
+1. Convert your logo to `.ico` (e.g. [convertio.co](https://convertio.co/png-ico/))
+2. Right-click the Brave shortcut → **Properties** → **Change Icon** → browse to your `.ico`
+3. For Store installs, create a shortcut from `%LOCALAPPDATA%\BraveSoftware\Brave-Browser\Application\brave.exe`
 
 ---
 
@@ -175,9 +188,9 @@ Drop **BO.png** in the same folder as the script. The setup will:
 | File | Platform | Purpose |
 |------|----------|---------|
 | `policies.json` | All | Complete policy definitions |
-| `setup.sh` | Linux | Auto-deploy + icon swap + desktop entry patch |
-| `setup.bat` | Windows | Reg import + shortcut (normal & Store) + icon |
-| `setup_mac.sh` | macOS | Plist deployment + launcher app with custom icon |
+| `setup.sh` | Linux | Auto-deploy + desktop entry patch |
+| `setup.bat` | Windows | Reg import + shortcut flags (normal & Store) |
+| `setup_mac.sh` | macOS | Plist deployment + launcher app with flags |
 | `brave-origin.reg` | Windows | Manual registry import |
 
 ---

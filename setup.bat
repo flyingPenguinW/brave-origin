@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul 2>&1
-title Brave Origin - Debloat + Speed Fix + Icon
+title Brave Origin - Debloat + Speed Fix
 cd /d "%~dp0"
 setlocal enabledelayedexpansion
 
@@ -111,42 +111,10 @@ reg add "HKLM\SOFTWARE\Policies\BraveSoftware\Brave" /v PrintingEnabled         
 
 echo    Policies applied.
 
-:: --- 2. Custom icon + shortcut ---
-echo.
-echo [2] Checking for custom icon...
-
-if exist "%~dp0BO.ico" (
-    echo    Found BO.ico — creating Brave Origin desktop shortcut...
-    if defined BRAVE_EXE (
-        set "SHORTCUT=%USERPROFILE%\Desktop\Brave Origin.lnk"
-        set "VBS=%TEMP%\make_shortcut.vbs"
-        (
-            echo Set WshShell = WScript.CreateObject^("WScript.Shell"^)
-            echo Set Shortcut = WshShell.CreateShortcut^("!SHORTCUT!"^)
-            echo Shortcut.TargetPath = "!BRAVE_EXE!"
-            echo Shortcut.Arguments = "--disable-features=AIChat,BraveVPN --enable-features=HighEfficiencyMode"
-            echo Shortcut.IconLocation = "%~dp0BO.ico, 0"
-            echo Shortcut.Save
-        ) > "!VBS!"
-        cscript //nologo "!VBS!" >nul 2>&1
-        del "!VBS!" 2>nul
-        echo    -^> Desktop shortcut with custom icon created.
-    ) else (
-        echo    [!] Brave.exe not found - create shortcut manually.
-    )
-) else if exist "%~dp0BO.png" (
-    echo    Found BO.png — need BO.ico for Windows shortcut icons.
-    echo    Convert BO.png to BO.ico at: https://convertio.co/png-ico/
-    echo    Then re-run this script.
-) else (
-    echo    No BO.png or BO.ico found — skipping icon swap.
-    echo    (Place BO.ico next to this script for custom shortcut icon.)
-)
-
-:: --- 3. Brave shortcut flags note ---
+:: --- 2. Brave shortcut flags note ---
 echo.
 if defined BRAVE_EXE (
-    echo [3] Add these flags to your Brave shortcut for extra debloat:
+    echo [2] Add these flags to your Brave shortcut for extra debloat:
     echo     Target: !BRAVE_EXE! --disable-features=AIChat,BraveVPN --enable-features=HighEfficiencyMode
 )
 

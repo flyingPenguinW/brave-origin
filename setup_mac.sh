@@ -154,45 +154,10 @@ cat > "$LAUNCHER_APP/Contents/Info.plist" << PLIST_EOF
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleIconFile</key>
-  <string>BO</string>
+  <string>app</string>
 </dict>
 </plist>
 PLIST_EOF
-
-# --- 3. Swap icon if BO.png exists ---
-echo "[3] Checking for custom icon..."
-if [ -f "$SCRIPT_DIR/BO.png" ]; then
-  echo "    Found BO.png — converting and applying to launcher..."
-
-  # Convert BO.png to BO.icns using iconutil
-  ICONSET="$SCRIPT_DIR/BO.iconset"
-  mkdir -p "$ICONSET"
-
-  for size in 16 32 64 128 256 512; do
-    sips -z "$size" "$size" "$SCRIPT_DIR/BO.png" --out "$ICONSET/icon_${size}x${size}.png" &>/dev/null || true
-    sips -z "$((size*2))" "$((size*2))" "$SCRIPT_DIR/BO.png" --out "$ICONSET/icon_${size}x${size}@2x.png" &>/dev/null || true
-  done
-
-  iconutil -c icns "$ICONSET" -o "$LAUNCHER_APP/Contents/Resources/BO.icns" 2>/dev/null || {
-    echo "    [!] Icon conversion failed. Copying PNG as fallback..."
-    cp "$SCRIPT_DIR/BO.png" "$LAUNCHER_APP/Contents/Resources/BO.png"
-  }
-
-  rm -rf "$ICONSET"
-
-  # Also try to replace Brave's app icon (requires SIP disabled or sudo)
-  if [ -f "/Applications/$BROWSER.app/Contents/Resources/app.icns" ]; then
-    echo "    Attempting system Brave icon swap..."
-    sudo cp "$LAUNCHER_APP/Contents/Resources/BO.icns" "/Applications/$BROWSER.app/Contents/Resources/app.icns" 2>/dev/null && \
-    echo "    System Brave icon replaced!" || \
-    echo "    [!] System icon swap blocked by SIP. Launcher app has the custom icon instead."
-  fi
-
-  echo "    Icon applied to Brave Origin launcher."
-else
-  echo "    No BO.png found — skipping icon swap."
-  echo "    (Place BO.png next to this script to auto-apply.)"
-fi
 
 echo ""
 echo "=========================================="

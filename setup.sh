@@ -100,32 +100,8 @@ POLICY_EOF
 sudo chmod 644 "$POLICY_FILE"
 echo "    -> $POLICY_FILE"
 
-# --- 2. Swap Brave icon with custom BO.png ---
-echo "[2] Checking for custom icon..."
-if [ -f "$SCRIPT_DIR/BO.png" ]; then
-  echo "    Found BO.png — replacing Brave icons..."
-  ICON_SIZES="16 22 24 32 48 64 96 128 256 512"
-  for size in $ICON_SIZES; do
-    dir="/usr/share/icons/hicolor/${size}x${size}/apps"
-    if [ -d "$dir" ]; then
-      if [ "$size" = "256" ] || [ "$size" = "512" ]; then
-        sudo cp "$SCRIPT_DIR/BO.png" "$dir/brave-browser.png"
-        sudo chmod 644 "$dir/brave-browser.png"
-      fi
-    fi
-  done
-  # Always copy to 256 (most common app icon size)
-  sudo cp "$SCRIPT_DIR/BO.png" "/usr/share/icons/hicolor/256x256/apps/brave-browser.png" 2>/dev/null || true
-  # Update icon cache
-  sudo gtk-update-icon-cache /usr/share/icons/hicolor/ 2>/dev/null || true
-  echo "    Icon replaced. You may need to log out/in for full effect."
-else
-  echo "    No BO.png found — skipping icon swap."
-  echo "    (Place BO.png next to this script to auto-replace the Brave icon.)"
-fi
-
-# --- 3. Patch the Brave desktop entry with debloat + speed flags ---
-echo "[3] Patching desktop entry..."
+# --- 2. Patch the Brave desktop entry with debloat + speed flags ---
+echo "[2] Patching desktop entry..."
 
 LOCAL_DESKTOP="$HOME/.local/share/applications/brave-browser.desktop"
 mkdir -p "$HOME/.local/share/applications"
@@ -133,11 +109,6 @@ mkdir -p "$HOME/.local/share/applications"
 SYS_DESKTOP=$(ls /usr/share/applications/brave*.desktop 2>/dev/null | head -1)
 if [ -n "$SYS_DESKTOP" ]; then
   cp "$SYS_DESKTOP" "$LOCAL_DESKTOP"
-fi
-
-# Set icon path in desktop entry
-if [ -f "$SCRIPT_DIR/BO.png" ]; then
-  sed -i "s|^Icon=.*|Icon=$SCRIPT_DIR/BO.png|" "$LOCAL_DESKTOP" 2>/dev/null || true
 fi
 
 if [ -f "$LOCAL_DESKTOP" ]; then
@@ -152,7 +123,7 @@ Version=1.0
 Name=Brave Browser
 Comment=Brave Browser (debloated)
 Exec=$(command -v "$BRAVE_BIN") --disable-features=AIChat,BraveVPN --enable-features=HighEfficiencyMode %U
-Icon=$( [ -f "$SCRIPT_DIR/BO.png" ] && echo "$SCRIPT_DIR/BO.png" || echo "brave-browser" )
+Icon=brave-browser
 Terminal=false
 Type=Application
 Categories=Network;WebBrowser;
