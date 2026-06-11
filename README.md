@@ -6,8 +6,10 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-blue)](#)
-[![Stars](https://img.shields.io/github/stars/AilieIsQueen/brave-origin?style=flat&color=gold)](#)
+[![Stars](https://img.shields.io/github/stars/flyingPenguinW/brave-origin?style=flat&color=gold)](#)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](#)
+
+### ☕ [Buy Me a Coffee](https://buymeacoffee.com/AilieIsQueen)
 
 </div>
 
@@ -17,16 +19,20 @@
 
 Brave is great, but it ships with **Rewards, Wallet, VPN, Leo AI, News, Talk, Tor, Speedreader, Playlist, Wayback Machine, Web Discovery, telemetry** — a ton of features most people never touch. This project kills them all at the **system policy level**, meaning they don't just get hidden — they stop loading entirely. No background processes, no UI clutter, no wasted RAM.
 
-| Before | After |
-|--------|-------|
-| 🧠 Leo AI in your sidebar | 🚫 Completely removed |
-| 💰 Rewards / BAT ads | 🚫 Disabled at kernel level |
-| 👛 Crypto Wallet + Web3 | 🚫 Gutted entirely |
-| 🔒 VPN upsells everywhere | 🚫 Vanished |
-| 📰 Brave News feed | 🚫 Gone |
-| 🎙️ Brave Talk button | 🚫 Zapped |
-| 🌐 Tor mode | 🚫 Removed |
-| 📊 P3A / Stats / WDP telemetry | 🚫 Blocked |
+| Feature | Effect |
+|---------|--------|
+| Leo AI | Disabled at root level |
+| Brave Rewards / BAT | Disabled at root level |
+| Crypto Wallet + Web3 | Disabled at root level |
+| VPN upsells | Disabled at root level |
+| Brave News feed | Disabled at root level |
+| Brave Talk | Disabled at root level |
+| Tor mode | Disabled at root level |
+| Speedreader | Disabled at root level |
+| Wayback Machine | Disabled at root level |
+| Playlist | Disabled at root level |
+| P3A / Stats / Web Discovery | Disabled at root level |
+| Sync | Disabled at root level |
 
 ...and **keeps Shields** (ad/tracker blocking) fully intact.
 
@@ -34,14 +40,9 @@ Brave is great, but it ships with **Rewards, Wallet, VPN, Leo AI, News, Talk, To
 
 ## 🚀 One-Click Setup
 
+Place **BO.png** (your custom icon) in the same folder as the script for automatic icon replacement.
+
 ### 🐧 Linux
-
-```bash
-sudo mkdir -p /etc/brave/policies/managed/
-sudo cp policies.json /etc/brave/policies/managed/
-```
-
-Or use the auto-deployer:
 
 ```bash
 chmod +x setup.sh && sudo ./setup.sh
@@ -49,7 +50,8 @@ chmod +x setup.sh && sudo ./setup.sh
 
 ### 🪟 Windows
 
-Right-click `setup.bat` → **Run as Administrator**.
+- **Normal install:** Right-click `setup.bat` → **Run as Administrator**
+- **Store install:** Run `setup.bat` as Admin — it will detect Store path and handle it
 
 ### 🍎 macOS
 
@@ -65,72 +67,73 @@ See [Android note](#android).
 
 ---
 
-## 📋 What Gets Disabled
+## 📋 Policy Reference
 
 ### Brave Bloat
 | Policy | Effect |
 |--------|--------|
-| `BraveRewardsDisabled` | Kills BAT rewards system |
-| `BraveWalletDisabled` | Removes crypto wallet + Web3 |
-| `BraveVPNDisabled` | Removes VPN button/prompts |
-| `BraveAIChatEnabled = false` | Kills Leo AI assistant |
-| `BraveNewsDisabled` | Removes News feed |
-| `BraveTalkDisabled` | Removes Talk widget |
-| `TorDisabled` | Removes Tor browsing |
-| `BraveSpeedreaderEnabled = false` | Disables reader mode |
-| `BraveWaybackMachineEnabled = false` | Disables 404 Wayback integration |
-| `BravePlaylistEnabled = false` | Disables offline media save |
+| `BraveRewardsDisabled` | Disabled at root level |
+| `BraveWalletDisabled` | Disabled at root level |
+| `BraveVPNDisabled` | Disabled at root level |
+| `BraveAIChatEnabled = false` | Disabled at root level |
+| `BraveNewsDisabled` | Disabled at root level |
+| `BraveTalkDisabled` | Disabled at root level |
+| `TorDisabled` | Disabled at root level |
+| `BraveSpeedreaderEnabled = false` | Disabled at root level |
+| `BraveWaybackMachineEnabled = false` | Disabled at root level |
+| `BravePlaylistEnabled = false` | Disabled at root level |
 
 ### Telemetry & Network
 | Policy | Effect |
 |--------|--------|
-| `BraveP3AEnabled = false` | Stops anonymous usage pings |
-| `BraveStatsPingEnabled = false` | Stops daily heartbeat |
-| `BraveWebDiscoveryEnabled = false` | Stops URL collection for search index |
-| `SyncDisabled` | Disables Brave Sync |
-| `BackgroundModeEnabled = false` | Prevents background processes |
-| `MetricsReportingEnabled = false` | Disables crash/metrics reporting |
-| `NetworkPredictionOptions = 0` | **Enables** DNS prefetch + TCP preconnect (speed fix) |
+| `BraveP3AEnabled = false` | Disabled at root level |
+| `BraveStatsPingEnabled = false` | Disabled at root level |
+| `BraveWebDiscoveryEnabled = false` | Disabled at root level |
+| `SyncDisabled` | Disabled at root level |
+| `BackgroundModeEnabled = false` | Disabled at root level |
+| `MetricsReportingEnabled = false` | Disabled at root level |
+| `NetworkPredictionOptions = 0` | **Enabled** (DNS prefetch + preconnect — speed fix) |
 
 ### Features
 | Policy | Effect |
 |--------|--------|
-| `PasswordManagerEnabled = false` | Disables built-in password manager |
-| `AutofillAddressEnabled = false` | Disables address autofill |
-| `AutofillCreditCardEnabled = false` | Disables credit card autofill |
-| `TranslateEnabled = false` | Disables translation |
-| `DeveloperToolsAvailability = 2` | Disables DevTools |
-| `SpellcheckEnabled = false` | Disables spellcheck |
-| `SearchSuggestEnabled = false` | Disables search suggestions |
+| `PasswordManagerEnabled = false` | Disabled at root level |
+| `AutofillAddressEnabled = false` | Disabled at root level |
+| `AutofillCreditCardEnabled = false` | Disabled at root level |
+| `TranslateEnabled = false` | Disabled at root level |
+| `DeveloperToolsAvailability = 2` | Disabled at root level |
+| `SpellcheckEnabled = false` | Disabled at root level |
+| `SearchSuggestEnabled = false` | Disabled at root level |
 
 ### UI Tweaks
 | Policy | Effect |
 |--------|--------|
-| `BookmarkBarEnabled = false` | Hides bookmark bar |
-| `ShowHomeButton = false` | Hides home button |
-| `HomepageLocation = about:blank` | Blank homepage |
-| `NewTabPageLocation = about:blank` | Blank new tab (fastest) |
-| `BookmarkBarEnabled = true` | Always show bookmarks bar |
+| `BookmarkBarEnabled = false` | Disabled at root level |
+| `ShowHomeButton = false` | Disabled at root level |
+| `HomepageLocation = about:blank` | Set to blank |
+| `NewTabPageLocation = about:blank` | Set to blank |
 
 ### Search Engines
-Restricted to **Brave Search · Google · DuckDuckGo** — no others allowed.
+Restricted to **Brave Search · Google · DuckDuckGo** only.
 
 ### RAM Savings
-- `HighEfficiencyModeEnabled = true` (memory saver)
-- `BackgroundModeEnabled = false`
-- All feature backends unloaded instead of just hidden
+| Policy | Effect |
+|--------|--------|
+| `HighEfficiencyModeEnabled = true` | Memory Saver enabled |
+| `BackgroundModeEnabled = false` | Disabled at root level |
+| All feature backends unloaded | RAM freed |
 
 ---
 
 ## ⚡ Speed Fix
 
-Pages loading slow? The culprit is usually `NetworkPredictionOptions`. This script sets it to **0** (full prediction), which re-enables:
+Pages loading slow? `NetworkPredictionOptions` is set to **0** (full prediction) — this re-enables:
 
 - ✅ DNS prefetching
 - ✅ TCP/SSL preconnection
 - ✅ Prerendering
 
-If pages are still slow, your secure DNS provider might be the bottleneck. Switch it in `brave://settings/privacy`:
+If still slow, your secure DNS provider might be the bottleneck. Change in `brave://settings/privacy`:
 
 | Provider | Template |
 |----------|----------|
@@ -142,8 +145,6 @@ If pages are still slow, your secure DNS provider might be the bottleneck. Switc
 
 ## 🧩 Post-Setup (Do These Once)
 
-Open these in Brave and flip the switches:
-
 ```
 brave://flags/#brave-sidebar            → Disabled
 brave://flags/#enable-zero-copy          → Enabled
@@ -154,37 +155,48 @@ brave://settings/system                  → "Memory Saver" ON
 
 ---
 
+## 🎨 Custom Icon
+
+Drop **BO.png** in the same folder as the script. The setup will:
+
+| Platform | What happens |
+|----------|-------------|
+| **Linux** | Replaces `/usr/share/icons/hicolor/*/apps/brave-browser.png` — applies system-wide |
+| **macOS** | Places the icon in the Brave Origin launcher app (open that instead of normal Brave) |
+| **Windows (normal)** | Creates desktop shortcut with BO.ico — place a `BO.ico` file alongside the script |
+| **Windows (Store)** | Creates desktop shortcut with BO.ico — same requirement |
+
+**Note:** Windows shortcut icons require `.ico` format. [Convert BO.png to BO.ico](https://convertio.co/png-ico/) and place it in the folder.
+
+---
+
 ## 📂 File Reference
 
 | File | Platform | Purpose |
 |------|----------|---------|
 | `policies.json` | All | Complete policy definitions |
-| `setup.sh` | Linux | Auto-deploy + desktop entry patch |
-| `setup.bat` | Windows | Reg import + shortcut instructions |
-| `setup_mac.sh` | macOS | Plist deployment + launcher app |
+| `setup.sh` | Linux | Auto-deploy + icon swap + desktop entry patch |
+| `setup.bat` | Windows | Reg import + shortcut (normal & Store) + icon |
+| `setup_mac.sh` | macOS | Plist deployment + launcher app with custom icon |
 | `brave-origin.reg` | Windows | Manual registry import |
 
 ---
 
 ## 🤖 Android
 
-Android Brave **does not support enterprise policies**. No amount of scripting can force it. However, you can still manually:
+Android Brave **does not support enterprise policies**. However:
 
 1. `brave://flags/#brave-sidebar` → **Disabled**
 2. `brave://flags/#enable-parallel-downloading` → **Enabled**
-3. Brave Settings → Rewards / Wallet / Leo → disable individually
+3. Settings → Rewards / Wallet / Leo → disable individually
 
-For root users: create `/data/local/tmp/brave_flags` or modify the APK's `AndroidManifest.xml` to add `--disable-features=AIChat,BraveVPN`.
+Root users: add `--disable-features=AIChat,BraveVPN` via `brave_app_flags`.
 
 ---
 
 <div align="center">
 
-## ☕ Support
-
-If this saved you time and frustration, buy me a coffee:
-
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-AilieIsQueen-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/AilieIsQueen)
+### ☕ [Buy Me a Coffee](https://buymeacoffee.com/AilieIsQueen)
 
 **Your support keeps this project maintained and improving!**
 

@@ -2,17 +2,20 @@
 set -e
 
 ###############################################################################
-# BRAVE ORIGIN - Complete debloat & speed fix for Brave Browser
+# BRAVE ORIGIN - Complete debloat & speed fix + icon swap
 # Platform: Linux
 # Usage:   chmod +x setup.sh && sudo ./setup.sh
+# Icon:    Place BO.png in same folder (optional)
 # Verif:   brave://policy
 ###############################################################################
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 POLICY_DIR="/etc/brave/policies/managed"
 POLICY_FILE="$POLICY_DIR/brave-origin.json"
 
 echo "=========================================="
 echo "  Brave Origin - Linux Setup"
+echo "  ☕ buymeacoffee.com/AilieIsQueen"
 echo "=========================================="
 echo ""
 
@@ -97,8 +100,32 @@ POLICY_EOF
 sudo chmod 644 "$POLICY_FILE"
 echo "    -> $POLICY_FILE"
 
-# --- 2. Patch the Brave desktop entry with debloat + speed flags ---
-echo "[2] Patching desktop entry..."
+# --- 2. Swap Brave icon with custom BO.png ---
+echo "[2] Checking for custom icon..."
+if [ -f "$SCRIPT_DIR/BO.png" ]; then
+  echo "    Found BO.png — replacing Brave icons..."
+  ICON_SIZES="16 22 24 32 48 64 96 128 256 512"
+  for size in $ICON_SIZES; do
+    dir="/usr/share/icons/hicolor/${size}x${size}/apps"
+    if [ -d "$dir" ]; then
+      if [ "$size" = "256" ] || [ "$size" = "512" ]; then
+        sudo cp "$SCRIPT_DIR/BO.png" "$dir/brave-browser.png"
+        sudo chmod 644 "$dir/brave-browser.png"
+      fi
+    fi
+  done
+  # Always copy to 256 (most common app icon size)
+  sudo cp "$SCRIPT_DIR/BO.png" "/usr/share/icons/hicolor/256x256/apps/brave-browser.png" 2>/dev/null || true
+  # Update icon cache
+  sudo gtk-update-icon-cache /usr/share/icons/hicolor/ 2>/dev/null || true
+  echo "    Icon replaced. You may need to log out/in for full effect."
+else
+  echo "    No BO.png found — skipping icon swap."
+  echo "    (Place BO.png next to this script to auto-replace the Brave icon.)"
+fi
+
+# --- 3. Patch the Brave desktop entry with debloat + speed flags ---
+echo "[3] Patching desktop entry..."
 
 LOCAL_DESKTOP="$HOME/.local/share/applications/brave-browser.desktop"
 mkdir -p "$HOME/.local/share/applications"
@@ -106,6 +133,11 @@ mkdir -p "$HOME/.local/share/applications"
 SYS_DESKTOP=$(ls /usr/share/applications/brave*.desktop 2>/dev/null | head -1)
 if [ -n "$SYS_DESKTOP" ]; then
   cp "$SYS_DESKTOP" "$LOCAL_DESKTOP"
+fi
+
+# Set icon path in desktop entry
+if [ -f "$SCRIPT_DIR/BO.png" ]; then
+  sed -i "s|^Icon=.*|Icon=$SCRIPT_DIR/BO.png|" "$LOCAL_DESKTOP" 2>/dev/null || true
 fi
 
 if [ -f "$LOCAL_DESKTOP" ]; then
@@ -120,7 +152,7 @@ Version=1.0
 Name=Brave Browser
 Comment=Brave Browser (debloated)
 Exec=$(command -v "$BRAVE_BIN") --disable-features=AIChat,BraveVPN --enable-features=HighEfficiencyMode %U
-Icon=brave-browser
+Icon=$( [ -f "$SCRIPT_DIR/BO.png" ] && echo "$SCRIPT_DIR/BO.png" || echo "brave-browser" )
 Terminal=false
 Type=Application
 Categories=Network;WebBrowser;
@@ -130,39 +162,22 @@ EOF
   echo "    -> created $LOCAL_DESKTOP"
 fi
 
-# --- 3. Fix permissions on policy file ---
-sudo chmod 644 "$POLICY_FILE"
+# --- 4. Flush DNS (speed helper) ---
+command -v resolvectl &>/dev/null && sudo resolvectl flush-caches 2>/dev/null || true
 
 echo ""
 echo "=========================================="
 echo "  DONE"
+echo "  ☕ buymeacoffee.com/AilieIsQueen"
 echo "=========================================="
 echo ""
-echo "Now do these once in Brave:"
+echo "Manual steps (do once in Brave):"
 echo ""
-echo "  Fix SLOW LOADING speed:"
-echo "    brave://settings/privacy -> Disable 'Use secure DNS' if pages still slow"
-echo "    (AdGuard DNS may be slow in your region - try Cloudflare:"
-echo "     https://cloudflare-dns.com/dns-query)"
+echo "  brave://flags/#brave-sidebar        -> Disabled"
+echo "  brave://flags/#enable-zero-copy      -> Enabled"
+echo "  brave://flags/#enable-parallel-downloading -> Enabled"
+echo "  brave://settings/appearance          -> Use system title bar and borders ON"
+echo "  brave://settings/system              -> Memory Saver ON"
 echo ""
-echo "  Remove sidebar:"
-echo "    brave://flags/#brave-sidebar -> Disabled"
+echo "Verify: brave://policy"
 echo ""
-echo "  Chrome-style window border:"
-echo "    brave://settings/appearance -> 'Use system title bar and borders' -> ON"
-echo ""
-echo "  Extra RAM savings:"
-echo "    brave://flags/#enable-zero-copy       -> Enabled"
-echo "    brave://flags/#enable-parallel-downloading -> Enabled"
-echo ""
-echo "  Verify:"
-echo "    brave://policy"
-echo "    brave://version"
-echo ""
-
-# --- Optional: flush DNS cache for faster loading ---
-if command -v resolvectl &>/dev/null; then
-  sudo resolvectl flush-caches 2>/dev/null || true
-fi
-
-echo "[*] Restart Brave completely and enjoy."
