@@ -43,7 +43,13 @@ Brave is great, but it ships with **Rewards, Wallet, VPN, Leo AI, News, Talk, To
 ### 🐧 Linux
 
 ```bash
-chmod +x setup.sh && sudo ./setup.sh
+chmod +x setup.sh && ./setup.sh
+```
+
+The script offers to back up your current Brave policy/desktop entry first (recommended). To undo everything later:
+
+```bash
+./setup.sh --restore
 ```
 
 ### 🪟 Windows

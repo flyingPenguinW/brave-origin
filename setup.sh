@@ -4,7 +4,9 @@ set -e
 ###############################################################################
 # BRAVE ORIGIN - Complete debloat & speed fix + icon swap
 # Platform: Linux
-# Usage:   chmod +x setup.sh && sudo ./setup.sh
+# Usage:   chmod +x setup.sh && ./setup.sh            (install)
+#          ./setup.sh --restore                       (undo, from backup)
+#          (also works with: sudo ./setup.sh)
 # Icon:    Place BO.png in same folder (optional)
 # Verif:   brave://policy
 ###############################################################################
@@ -12,6 +14,64 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 POLICY_DIR="/etc/brave/policies/managed"
 POLICY_FILE="$POLICY_DIR/brave-origin.json"
+
+# Resolve the real user's home, so it also works when started with sudo
+# (under sudo $HOME can be /root).
+REAL_USER="${SUDO_USER:-$(id -un)}"
+REAL_HOME="$(getent passwd "$REAL_USER" | cut -d: -f6)"
+REAL_HOME="${REAL_HOME:-$HOME}"
+LOCAL_APPS="$REAL_HOME/.local/share/applications"
+LOCAL_DESKTOP="$LOCAL_APPS/brave-browser.desktop"
+BACKUP_DIR="$REAL_HOME/.brave-origin-backup"
+
+ask_yn() {
+  local reply
+  while true; do
+    read -r -p "$1 [y/n]: " reply
+    case "$reply" in
+      [Yy]|[Yy][Ee][Ss]) return 0 ;;
+      [Nn]|[Nn][Oo]) return 1 ;;
+      *) echo "Please answer y or n." ;;
+    esac
+  done
+}
+
+# --- Restore mode: ./setup.sh --restore ---
+if [ "${1:-}" = "--restore" ]; then
+  echo "=========================================="
+  echo "  Brave Origin - Restore"
+  echo "=========================================="
+  echo ""
+  if [ -d "$BACKUP_DIR" ]; then
+    echo "[*] Using backup: $BACKUP_DIR"
+  else
+    echo "[!] No backup found in $BACKUP_DIR."
+    echo "    Restore will just remove the files created by this script"
+    echo "    (policy file and local desktop entry)."
+  fi
+  ask_yn "Restore Brave to its previous state?" || { echo "Aborted."; exit 0; }
+
+  echo "[1] Policies..."
+  if [ -f "$BACKUP_DIR/brave-origin.json" ]; then
+    sudo cp -p "$BACKUP_DIR/brave-origin.json" "$POLICY_FILE"
+  else
+    sudo rm -f "$POLICY_FILE"
+  fi
+
+  echo "[2] Desktop entry..."
+  if [ -f "$BACKUP_DIR/brave-browser.desktop" ]; then
+    cp -p "$BACKUP_DIR/brave-browser.desktop" "$LOCAL_DESKTOP"
+  else
+    rm -f "$LOCAL_DESKTOP"
+  fi
+  update-desktop-database "$LOCAL_APPS" 2>/dev/null || true
+
+  echo ""
+  echo "Done. Restart Brave and check brave://policy"
+  echo "Manual flags/settings (brave://flags, brave://settings) are not"
+  echo "touched by this script - revert them by hand if you changed them."
+  exit 0
+fi
 
 echo "=========================================="
 echo "  Brave Origin - Linux Setup"
@@ -30,6 +90,28 @@ if [ -z "$BRAVE_BIN" ]; then
   exit 1
 fi
 echo "[*] Detected: $(command -v "$BRAVE_BIN")"
+
+# --- 0. Backup ---
+echo ""
+echo "A backup lets you undo everything later with: ./setup.sh --restore"
+if [ -d "$BACKUP_DIR" ]; then
+  echo "[*] Backup already exists ($BACKUP_DIR) - keeping the original one."
+elif ask_yn "Do you want to create a Brave backup? (strongly recommended)"; then
+  mkdir -p "$BACKUP_DIR"
+  if [ -f "$POLICY_FILE" ]; then
+    sudo cp -p "$POLICY_FILE" "$BACKUP_DIR/brave-origin.json"
+    sudo chown "$(id -u "$REAL_USER"):$(id -g "$REAL_USER")" "$BACKUP_DIR/brave-origin.json"
+  fi
+  if [ -f "$LOCAL_DESKTOP" ]; then
+    cp -p "$LOCAL_DESKTOP" "$BACKUP_DIR/brave-browser.desktop"
+  fi
+  chown -R "$(id -u "$REAL_USER"):$(id -g "$REAL_USER")" "$BACKUP_DIR" 2>/dev/null || true
+  echo "[*] Backup saved to $BACKUP_DIR"
+else
+  echo "[!] Continuing WITHOUT backup."
+  ask_yn "Are you sure?" || { echo "Aborted."; exit 0; }
+fi
+echo ""
 
 # --- 1. Deploy enterprise policies ---
 echo "[1] Deploying system policies..."
@@ -103,8 +185,7 @@ echo "    -> $POLICY_FILE"
 # --- 2. Patch the Brave desktop entry with debloat + speed flags ---
 echo "[2] Patching desktop entry..."
 
-LOCAL_DESKTOP="$HOME/.local/share/applications/brave-browser.desktop"
-mkdir -p "$HOME/.local/share/applications"
+mkdir -p "$LOCAL_APPS"
 
 SYS_DESKTOP=$(ls /usr/share/applications/brave*.desktop 2>/dev/null | head -1)
 if [ -n "$SYS_DESKTOP" ]; then
@@ -114,7 +195,7 @@ fi
 if [ -f "$LOCAL_DESKTOP" ]; then
   sed -i 's|^Exec=brave-browser\( .*\)\?$|Exec=brave-browser --disable-features=AIChat,BraveVPN --enable-features=HighEfficiencyMode\1|' "$LOCAL_DESKTOP"
   sed -i 's|^Exec=brave-browser-stable\( .*\)\?$|Exec=brave-browser-stable --disable-features=AIChat,BraveVPN --enable-features=HighEfficiencyMode\1|' "$LOCAL_DESKTOP"
-  update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
+  update-desktop-database "$LOCAL_APPS" 2>/dev/null || true
   echo "    -> $LOCAL_DESKTOP"
 else
   cat > "$LOCAL_DESKTOP" << EOF
@@ -132,6 +213,7 @@ StartupNotify=true
 EOF
   echo "    -> created $LOCAL_DESKTOP"
 fi
+chown "$(id -u "$REAL_USER"):$(id -g "$REAL_USER")" "$LOCAL_DESKTOP" 2>/dev/null || true
 
 # --- 4. Flush DNS (speed helper) ---
 command -v resolvectl &>/dev/null && sudo resolvectl flush-caches 2>/dev/null || true
