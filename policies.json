@@ -19,7 +19,7 @@
   "ComponentUpdatesEnabled": true,
   "DnsOverHttpsMode": "secure",
   "DnsOverHttpsTemplates": "https://dns.adguard-dns.com/dns-query",
-  "SafeBrowsingProtectionLevel": 2,
+  "SafeBrowsingProtectionLevel": 1,
   "AlternateErrorPagesEnabled": false,
   "NetworkPredictionOptions": 0,
   "PrivacySandboxAdTopicsEnabled": false,

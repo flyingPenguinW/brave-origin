@@ -1,78 +1,70 @@
 Windows Registry Editor Version 5.00
 
-; Brave Origin - Complete Debloat Policy for Windows
+; Brave Origin - Extreme Debloat Policy for Windows
 ; Import this file, then fully restart Brave
 ; Verify at brave://policy
 ;
-; NOTE: ManagedSearchEngines (search engine restriction) is NOT
-; included here because complex policies require special registry
-; formatting. See brave-origin-policies.json for full config.
+; To undo: run setup.bat and choose 4) Restore, or delete the values under the key.
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\BraveSoftware\Brave]
 
-; === BRAVE BLOAT FEATURES ===
 "BraveRewardsDisabled"=dword:00000001
 "BraveWalletDisabled"=dword:00000001
 "BraveVPNDisabled"=dword:00000001
-"BraveAIChatEnabled"=dword:00000000
 "BraveNewsDisabled"=dword:00000001
 "BraveTalkDisabled"=dword:00000001
 "TorDisabled"=dword:00000001
-"BraveSpeedreaderEnabled"=dword:00000000
-"BraveWaybackMachineEnabled"=dword:00000000
 "BravePlaylistEnabled"=dword:00000000
-
-; === TELEMETRY & BACKGROUND ===
+"BraveWaybackMachineEnabled"=dword:00000000
+"BraveAIChatEnabled"=dword:00000000
+"BraveSpeedreaderEnabled"=dword:00000000
 "BraveP3AEnabled"=dword:00000000
 "BraveStatsPingEnabled"=dword:00000000
 "BraveWebDiscoveryEnabled"=dword:00000000
-"SyncDisabled"=dword:00000001
-"BackgroundModeEnabled"=dword:00000000
 "MetricsReportingEnabled"=dword:00000000
-"ComponentUpdatesEnabled"=dword:00000000
-
-; === RAM SAVING ===
-"HighEfficiencyModeEnabled"=dword:00000001
-
-; === PRIVACY HARDENING ===
+"UserFeedbackAllowed"=dword:00000000
+"PrivacySandboxAdTopicsEnabled"=dword:00000000
+"PrivacySandboxPromptEnabled"=dword:00000000
+"PrivacySandboxSiteEnabledAdsEnabled"=dword:00000000
+"PaymentMethodQueryEnabled"=dword:00000000
+"AlternateErrorPagesEnabled"=dword:00000000
+"NetworkPredictionOptions"=dword:00000000
+"SearchSuggestEnabled"=dword:00000000
+"SafeBrowsingProtectionLevel"=dword:00000001
 "DnsOverHttpsMode"="secure"
 "DnsOverHttpsTemplates"="https://dns.adguard-dns.com/dns-query"
-"SafeBrowsingProtectionLevel"=dword:00000002
-"AlternateErrorPagesEnabled"=dword:00000000
-"NetworkPredictionOptions"=dword:00000002
-"SearchSuggestEnabled"=dword:00000000
-"PaymentMethodQueryEnabled"=dword:00000000
-"UserFeedbackAllowed"=dword:00000000
-"SpellcheckEnabled"=dword:00000000
-"HttpsUpgradesEnabled"=dword:00000001
-
-; === AUTOFILL, PASSWORDS & TRANSLATE ===
+"SyncDisabled"=dword:00000001
+"BrowserAddPersonEnabled"=dword:00000000
+"BrowserGuestModeEnabled"=dword:00000000
 "PasswordManagerEnabled"=dword:00000000
 "AutofillAddressEnabled"=dword:00000000
 "AutofillCreditCardEnabled"=dword:00000000
 "TranslateEnabled"=dword:00000000
-
-; === DISABLE BLOAT ===
-"DeveloperToolsAvailability"=dword:00000002
-"IncognitoModeAvailability"=dword:00000000
-"BrowserAddPersonEnabled"=dword:00000000
-"BrowserGuestModeEnabled"=dword:00000000
-"DefaultBrowserSettingEnabled"=dword:00000000
-
-; === UI TWEAKS ===
-"BookmarkBarEnabled"=dword:00000000
+"SpellcheckEnabled"=dword:00000000
+"SpellcheckServiceEnabled"=dword:00000000
 "ShowHomeButton"=dword:00000000
 "HomepageLocation"="about:blank"
+"DefaultBrowserSettingEnabled"=dword:00000000
+"BookmarkBarEnabled"=dword:00000000
 "NewTabPageLocation"="about:blank"
-
-; === DOWNLOADS ===
+"DeveloperToolsAvailability"=dword:00000002
+"ManagedSearchEngines"="[{\"name\":\"Brave Search\",\"keyword\":\"search.brave.com\",\"search_url\":\"https://search.brave.com/search?q={searchTerms}\",\"suggest_url\":\"https://search.brave.com/api/suggest?q={searchTerms}\",\"encoding\":\"UTF-8\",\"favicon_url\":\"https://brave.com/favicon.ico\"},{\"name\":\"Google\",\"keyword\":\"google.com\",\"search_url\":\"https://www.google.com/search?q={searchTerms}\",\"suggest_url\":\"https://www.google.com/complete/search?output=chrome&q={searchTerms}\",\"encoding\":\"UTF-8\",\"favicon_url\":\"https://www.google.com/favicon.ico\"},{\"name\":\"DuckDuckGo\",\"keyword\":\"duckduckgo.com\",\"search_url\":\"https://duckduckgo.com/?q={searchTerms}\",\"suggest_url\":\"https://duckduckgo.com/ac/?q={searchTerms}&type=list\",\"encoding\":\"UTF-8\",\"favicon_url\":\"https://duckduckgo.com/favicon.ico\"}]"
+"DefaultSearchProviderEnabled"=dword:00000001
+"DefaultSearchProviderName"="Brave Search"
+"DefaultSearchProviderSearchURL"="https://search.brave.com/search?q={searchTerms}"
+"BackgroundModeEnabled"=dword:00000000
+"HighEfficiencyModeEnabled"=dword:00000001
+"ComponentUpdatesEnabled"=dword:00000001
+"HttpsUpgradesEnabled"=dword:00000001
+"IncognitoModeAvailability"=dword:00000000
 "DownloadRestrictions"=dword:00000000
 "PromptForDownloadLocation"=dword:00000001
 "PrintingEnabled"=dword:00000001
 
 ; --- MANUAL STEPS NEEDED ON WINDOWS ---
 ; 1. brave://flags/#brave-sidebar -> set to Disabled (removes sidebar)
-; 2. brave://settings/appearance -> "Use system title bar and borders" -> ON (for Chrome-style border)
-; 3. brave://flags/#enable-parallel-downloading -> Enabled (faster downloads, less RAM)
+; 2. brave://settings/appearance -> "Use system title bar and borders" -> ON
+; 3. brave://flags/#enable-parallel-downloading -> Enabled
 ; 4. brave://flags/#ignore-gpu-blocklist -> Enabled (better GPU perf)
-; 5. Add --disable-features=AIChat,BraveVPN to Brave shortcut target
+; 5. brave://settings/security -> "Use secure DNS" (Hard only; Extreme forces AdGuard)
+; 6. Add --disable-features=AIChat,BraveVPN --enable-features=HighEfficiencyMode to Brave shortcut target

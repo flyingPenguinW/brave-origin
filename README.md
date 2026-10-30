@@ -17,33 +17,57 @@
 
 ## ✨ What It Does
 
-Brave is great, but it ships with **Rewards, Wallet, VPN, Leo AI, News, Talk, Tor, Speedreader, Playlist, Wayback Machine, Web Discovery, telemetry** — a ton of features most people never touch. This project kills them all at the **system policy level**, meaning they don't just get hidden — they stop loading entirely. No background processes, no UI clutter, no wasted RAM.
+Brave includes optional services such as **Rewards, Wallet, VPN, News, Talk, Tor, Playlist and Wayback Machine**. This project uses managed policies to disable selected features and telemetry. The effect depends on whether your Brave version supports each policy; reduced RAM use or faster browsing is not guaranteed.
 
-| Feature | Effect |
-|---------|--------|
-| Leo AI | Disabled at root level |
-| Brave Rewards / BAT | Disabled at root level |
-| Crypto Wallet + Web3 | Disabled at root level |
-| VPN upsells | Disabled at root level |
-| Brave News feed | Disabled at root level |
-| Brave Talk | Disabled at root level |
-| Tor mode | Disabled at root level |
-| Speedreader | Disabled at root level |
-| Wayback Machine | Disabled at root level |
-| Playlist | Disabled at root level |
-| P3A / Stats / Web Discovery | Disabled at root level |
-| Sync | Disabled at root level |
+It also covers features you may actually use (**Leo AI, Speedreader, sync, DevTools, autofill...**). That is why there are two levels, and you choose what stays:
 
-...and **keeps Shields** (ad/tracker blocking) fully intact.
+- **Hard** (recommended) - removes the bloat and telemetry, keeps the useful features.
+- **Extreme** - stricter preset that also disables optional browser features.
+- **Custom** - pick Hard / Extreme / Skip per category.
+
+Summary of the presets (the scripts show a similar comparison):
+
+**Same in both:** Safe Browsing = Standard (Enhanced shares more visited links).
+
+**Disabled in both levels**
+
+| Setting | Extreme | Hard |
+|---|---|---|
+| Rewards / Wallet / VPN / News / Tor | off | off |
+| Telemetry & tracking | off | off |
+| Password manager | off | off |
+| Search suggestions | off | off |
+| Background mode | off | off |
+
+**Differences**
+
+| Setting | Extreme | Hard |
+|---|---|---|
+| Leo AI | off | **User settings** (available, not forced on) |
+| Speedreader | off | **ON** |
+| Sync | off (all profiles) | **User settings** (choose per profile) |
+| Add profile / guest mode | blocked | **User settings** (not restricted by this script) |
+| Address autofill | off | **ON** |
+| Card autofill | off | **User settings** |
+| Translate & spellcheck | off | **ON** |
+| Bookmarks bar | hidden | **shown** |
+| New tab page | about:blank | **unchanged** |
+| DevTools | off | **ON** |
+| DNS-over-HTTPS | forced (AdGuard) | **your choice** (not locked) |
+| Default search engine | Brave Search | **your choice** (not overridden) |
+
+**Both levels also:** homepage = `about:blank`, Memory Saver ON, HTTPS upgrades ON. Shields (ad/tracker blocking) stay fully intact.
 
 ---
 
 ## 🚀 One-Click Setup
 
+All three scripts (Linux, Windows, macOS) work the same way: they show a menu, offer a backup, and write the policies for the level you choose.
+
 ### 🐧 Linux
 
 ```bash
-chmod +x setup.sh && sudo ./setup.sh
+chmod +x setup.sh && ./setup.sh
 ```
 
 ### 🪟 Windows
@@ -54,72 +78,121 @@ chmod +x setup.sh && sudo ./setup.sh
 ### 🍎 macOS
 
 ```bash
-chmod +x setup_mac.sh && sudo ./setup_mac.sh
+chmod +x setup_mac.sh && ./setup_mac.sh
 ```
+
+### Debloat levels
+
+The scripts show this menu:
+
+1. **Hard** - same debloat, but keeps features you may actually use (recommended)
+2. **Extreme** - stricter preset that also disables optional browser features
+3. **Custom** - choose Hard / Extreme / Skip per category
+4. **Restore** - back to the original Brave state (from backup)
+
+The comparison of what each level does is in the "What It Does" section at the top.
+
+Policies lock the matching options in `brave://settings` ("managed by your organization"). Use **Restore** to undo.
+
+### Backup & restore
+
+Before changing anything the script offers to back up your current Brave policies (strongly recommended). An existing backup is never overwritten, so running the script again keeps your original state.
+
+| Platform | Backup location | Restore |
+|---|---|---|
+| Linux | `~/.brave-origin-backup` (policy file + desktop entry) | `./setup.sh --restore` |
+| Windows | `%USERPROFILE%\.brave-origin-backup` (registry export of the Brave policy key) | `setup.bat /restore` |
+| macOS | `~/.brave-origin-backup` (managed plist + launcher app) | `./setup_mac.sh --restore` |
+
+You can also run the script again and choose **4) Restore**. Without a backup, restore only removes the policy values created by the script (other policies are left alone).
+
+Manual flags and settings in `brave://flags` / `brave://settings` are not touched by the scripts - revert them by hand if you changed them.
 
 ### 🤖 Android
 
 See [Android note](#android).
 
-**Verify:** Open `brave://policy` — every switch should show **"Enabled"**.
+**Verify:** Open `brave://policy` — the policies of the level you chose should be listed with status **OK** (see the [Policy Reference](#-policy-reference) for the values).
 
 ---
 
 ## 📋 Policy Reference
 
-### Brave Bloat
-| Policy | Effect |
-|--------|--------|
-| `BraveRewardsDisabled` | Disabled at root level |
-| `BraveWalletDisabled` | Disabled at root level |
-| `BraveVPNDisabled` | Disabled at root level |
-| `BraveAIChatEnabled = false` | Disabled at root level |
-| `BraveNewsDisabled` | Disabled at root level |
-| `BraveTalkDisabled` | Disabled at root level |
-| `TorDisabled` | Disabled at root level |
-| `BraveSpeedreaderEnabled = false` | Disabled at root level |
-| `BraveWaybackMachineEnabled = false` | Disabled at root level |
-| `BravePlaylistEnabled = false` | Disabled at root level |
+Two tables cover the presets: shared settings appear once, and only the differences have Extreme / Hard columns. Each row describes the feature first; the policy name and exact value are included for troubleshooting.
 
-### Telemetry & Network
-| Policy | Effect |
-|--------|--------|
-| `BraveP3AEnabled = false` | Disabled at root level |
-| `BraveStatsPingEnabled = false` | Disabled at root level |
-| `BraveWebDiscoveryEnabled = false` | Disabled at root level |
-| `SyncDisabled` | Disabled at root level |
-| `BackgroundModeEnabled = false` | Disabled at root level |
-| `MetricsReportingEnabled = false` | Disabled at root level |
-| `NetworkPredictionOptions = 0` | **Enabled** (DNS prefetch + preconnect — speed fix) |
+**How to read the tables:**
 
-### Features
-| Policy | Effect |
-|--------|--------|
-| `PasswordManagerEnabled = false` | Disabled at root level |
-| `AutofillAddressEnabled = false` | Disabled at root level |
-| `AutofillCreditCardEnabled = false` | Disabled at root level |
-| `TranslateEnabled = false` | Disabled at root level |
-| `DeveloperToolsAvailability = 2` | Disabled at root level |
-| `SpellcheckEnabled = false` | Disabled at root level |
-| `SearchSuggestEnabled = false` | Disabled at root level |
+- **Off / On:** the script writes a managed value. The value in backticks is what it writes, not necessarily the feature's on/off state: a policy named `SyncDisabled` disables sync when its value is `true`.
+- **User settings:** the script does **not** set that policy. Your profile's preference or Brave's default applies, unless another policy controls it. This does not mean the feature is forced on. For example, Hard leaves Leo available but does not enable it if you previously turned it off.
+- **Custom:** applies these settings only for the categories you select. Skip omits that category's policies; it does not restore values previously overwritten by the script.
 
-### UI Tweaks
-| Policy | Effect |
-|--------|--------|
-| `BookmarkBarEnabled = false` | Disabled at root level |
-| `ShowHomeButton = false` | Disabled at root level |
-| `HomepageLocation = about:blank` | Set to blank |
-| `NewTabPageLocation = about:blank` | Set to blank |
+### Shared settings — Hard and Extreme
 
-### Search Engines
-Restricted to **Brave Search · Google · DuckDuckGo** only.
+| Setting / policy | Applied in both levels |
+|---|---|
+| Safe Browsing · `SafeBrowsingProtectionLevel` | Standard protection (`1`) |
+| Rewards · `BraveRewardsDisabled` | Off (`true`) |
+| Wallet · `BraveWalletDisabled` | Off (`true`) |
+| VPN · `BraveVPNDisabled` | Off (`true`) |
+| News · `BraveNewsDisabled` | Off (`true`) |
+| Talk · `BraveTalkDisabled` | Off (`true`) |
+| Tor windows · `TorDisabled` | Off (`true`) |
+| Playlist · `BravePlaylistEnabled` | Off (`false`) |
+| Wayback Machine · `BraveWaybackMachineEnabled` | Off (`false`) |
+| P3A telemetry · `BraveP3AEnabled` | Off (`false`) |
+| Usage statistics ping · `BraveStatsPingEnabled` | Off (`false`) |
+| Web Discovery · `BraveWebDiscoveryEnabled` | Off (`false`) |
+| Metrics reporting · `MetricsReportingEnabled` | Off (`false`) |
+| User feedback · `UserFeedbackAllowed` | Off (`false`) |
+| Ad Topics · `PrivacySandboxAdTopicsEnabled` | Off (`false`) |
+| Privacy Sandbox prompt · `PrivacySandboxPromptEnabled` | Off (`false`) |
+| Site-suggested ads · `PrivacySandboxSiteEnabledAdsEnabled` | Off (`false`) |
+| Websites checking for saved payment methods · `PaymentMethodQueryEnabled` | Off (`false`) |
+| Alternate error pages · `AlternateErrorPagesEnabled` | Off (`false`) |
+| Search suggestions · `SearchSuggestEnabled` | Off (`false`) |
+| Password manager · `PasswordManagerEnabled` | Off (`false`) |
+| Online spellcheck service · `SpellcheckServiceEnabled` | Off (`false`); separate from local spellcheck |
+| Background mode · `BackgroundModeEnabled` | Off (`false`); do not keep background apps running after the last window closes |
+| Home button · `ShowHomeButton` | Hidden (`false`) |
+| Default-browser checks · `DefaultBrowserSettingEnabled` | Off (`false`); does not change your OS default browser |
+| Home button destination · `HomepageLocation` | Blank page (`about:blank`); not the new tab or startup page |
+| Network prediction · `NetworkPredictionOptions` | Allowed on any network (`0`); not disabled by these presets |
+| Memory Saver · `HighEfficiencyModeEnabled` | On (`true`) |
+| Component updates · `ComponentUpdatesEnabled` | Allowed (`true`) |
+| HTTPS upgrades · `HttpsUpgradesEnabled` | On (`true`) |
+| Private windows · `IncognitoModeAvailability` | Allowed (`0`) |
+| Download restrictions · `DownloadRestrictions` | No policy restriction (`0`); Safe Browsing remains on |
+| Download location prompt · `PromptForDownloadLocation` | On (`true`) |
+| Printing · `PrintingEnabled` | Allowed (`true`) |
 
-### RAM Savings
-| Policy | Effect |
-|--------|--------|
-| `HighEfficiencyModeEnabled = true` | Memory Saver enabled |
-| `BackgroundModeEnabled = false` | Disabled at root level |
-| All feature backends unloaded | RAM freed |
+### Differences — what Hard keeps or leaves to you
+
+| Setting / policy | Extreme | Hard |
+|---|---|---|
+| Leo AI · `BraveAIChatEnabled` | Off (`false`) | On (`true`) |
+| Speedreader · `BraveSpeedreaderEnabled` | Off (`false`) | On (`true`) |
+| Sync · `SyncDisabled` | Off for all profiles (`true`) | On (`true`) |
+| Adding profiles · `BrowserAddPersonEnabled` | Blocked (`false`) | On (`true`) |
+| Guest mode · `BrowserGuestModeEnabled` | Blocked (`false`) | On (`true`) |
+| Address autofill · `AutofillAddressEnabled` | Off (`false`) | On (`true`) |
+| Card autofill · `AutofillCreditCardEnabled` | Off (`false`) | On (`true`) |
+| Translation · `TranslateEnabled` | Off (`false`) | On (`true`) |
+| Local spellcheck · `SpellcheckEnabled` | Off (`false`) | On (`true`) |
+| Bookmarks bar · `BookmarkBarEnabled` | Hidden (`false`) | Shown (`true`) |
+| New tab page · `NewTabPageLocation` | Blank page (`about:blank`) | Default |
+| DevTools · `DeveloperToolsAvailability` | Blocked (`2`) | Allowed (`1`) |
+| Secure DNS mode · `DnsOverHttpsMode` | DoH only (`secure`), no unencrypted fallback | **User settings** |
+| Secure DNS provider · `DnsOverHttpsTemplates` | AdGuard DoH¹ | **User settings** |
+| Managed default search · `DefaultSearchProviderEnabled` | Enabled (`true`) | **User settings** |
+| Default search name · `DefaultSearchProviderName` | Brave Search (`Brave Search`) | **User settings** |
+| Default search URL · `DefaultSearchProviderSearchURL` | Brave Search URL² | **User settings** |
+| Managed search engines · `ManagedSearchEngines` | Brave Search, Google, DuckDuckGo | **User settings** |
+
+¹ AdGuard DoH template: `https://dns.adguard-dns.com/dns-query`. In Hard, choose your provider at `brave://settings/security`.
+
+² Brave Search URL: `https://search.brave.com/search?q={searchTerms}`. Hard leaves both your default engine and your engine list untouched.
+
+The scripts write these policies in each platform's native format. For manual presets, use `policies.json` / `brave-origin.reg` for Extreme, or `policies-hard.json` / `brave-origin-hard.reg` for Hard. Importing a preset directly does not run the backup or menu.
 
 ---
 
@@ -131,11 +204,14 @@ Pages loading slow? `NetworkPredictionOptions` is set to **0** (full prediction)
 - ✅ TCP/SSL preconnection
 - ✅ Prerendering
 
-If still slow, your secure DNS provider might be the bottleneck. Change in `brave://settings/privacy`:
+If still slow, your secure DNS provider might be the bottleneck:
+
+- **Hard:** DNS is not locked. Change it in Brave settings (search for "secure DNS"; usually `brave://settings/security`).
+- **Extreme:** the provider is forced by policy (AdGuard) and cannot be changed in settings. Edit `DnsOverHttpsTemplates` in `setup.sh` / `setup.bat` / `setup_mac.sh` and run it again.
 
 | Provider | Template |
 |----------|----------|
-| **AdGuard** (default) | `https://dns.adguard-dns.com/dns-query` |
+| **AdGuard** (default in Extreme) | `https://dns.adguard-dns.com/dns-query` |
 | **Cloudflare** (fast) | `https://cloudflare-dns.com/dns-query` |
 | **Quad9** (secure) | `https://dns.quad9.net/dns-query` |
 
@@ -144,12 +220,16 @@ If still slow, your secure DNS provider might be the bottleneck. Change in `brav
 ## 🧩 Post-Setup (Do These Once)
 
 ```
-brave://flags/#brave-sidebar            → Disabled
-brave://flags/#enable-zero-copy          → Enabled
+brave://flags/#brave-news-sidebar          → Disabled
 brave://flags/#enable-parallel-downloading → Enabled
-brave://settings/appearance              → "Use system title bar and borders" ON
-brave://settings/system                  → "Memory Saver" ON
+brave://settings/appearance                → "Use system title bar and borders" ON
+brave://settings/system                    → "Memory Saver" ON
+Optional:
+brave://settings/security                  → "Use secure DNS" → choose a provider (Hard only)
+brave://flags/#enable-zero-copy            → Enabled - faster browsing. Problems may occur on older GPUs. If you get problems or artifacts leave default.
 ```
+
+> **DoH (DNS-over-HTTPS)** encrypts the website lookups your browser makes, so your ISP and the local network can't see which sites you visit. It does not hide your IP and does not block ads.
 
 ---
 
@@ -187,11 +267,13 @@ Create a desktop shortcut and point its icon to your `.ico` file:
 
 | File | Platform | Purpose |
 |------|----------|---------|
-| `policies.json` | All | Complete policy definitions |
-| `setup.sh` | Linux | Auto-deploy + desktop entry patch |
-| `setup.bat` | Windows | Reg import + shortcut flags (normal & Store) |
-| `setup_mac.sh` | macOS | Plist deployment + launcher app with flags |
-| `brave-origin.reg` | Windows | Manual registry import |
+| `policies.json` | All | Complete policy definitions (Extreme) |
+| `policies-hard.json` | All | Complete policy definitions (Hard) |
+| `setup.sh` | Linux | Menu, backup/restore, policy deploy + desktop entry patch |
+| `setup.bat` | Windows | Menu, backup/restore, registry policies + shortcut flags (normal & Store) |
+| `setup_mac.sh` | macOS | Menu, backup/restore, plist deployment + launcher app with flags |
+| `brave-origin.reg` | Windows | Manual registry import (Extreme) |
+| `brave-origin-hard.reg` | Windows | Manual registry import (Hard) |
 
 ---
 
